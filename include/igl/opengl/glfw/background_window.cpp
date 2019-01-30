@@ -17,10 +17,18 @@ IGL_INLINE bool igl::opengl::glfw::background_window(GLFWwindow* & window)
   window = glfwCreateWindow(1, 1,"", NULL, NULL);
   if(!window) return false;
   glfwMakeContextCurrent(window);
+#ifdef __glad_h_
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
   {
     printf("Failed to load OpenGL and its extensions");
   }
+#else
+  glewExperimental = GL_TRUE;
+  if (glewInit() != GLEW_OK)
+  {
+    printf("Failed to load OpenGL and its extensions with GLEW");
+  }
+#endif
   glGetError(); // pull and safely ignore unhandled errors like GL_INVALID_ENUM
   return true;
 }
