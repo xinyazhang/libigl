@@ -153,9 +153,11 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   }
 
   // Send transformations to the GPU
+  GLint trani  = glGetUniformLocation(data.meshgl.shader_mesh,"transform");
   GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
   GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
   GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
+  glUniformMatrix4fv(trani, 1, GL_FALSE, data.transform.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
   glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());

@@ -166,6 +166,7 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   is_initialized = true;
   std::string mesh_vertex_shader_string =
 R"(#version 150
+  uniform mat4 transform;
   uniform mat4 view;
   uniform mat4 proj;
   uniform mat4 normal_matrix;
@@ -184,8 +185,8 @@ R"(#version 150
 
   void main()
   {
-    position_eye = vec3 (view * vec4 (position, 1.0));
-    normal_eye = vec3 (normal_matrix * vec4 (normal, 0.0));
+    position_eye = vec3 (view * transform * vec4 (position, 1.0));
+    normal_eye = vec3 (normal_matrix * transform * vec4 (normal, 0.0));
     normal_eye = normalize(normal_eye);
     gl_Position = proj * vec4 (position_eye, 1.0); //proj * view * vec4(position, 1.0);"
     Kai = Ka;

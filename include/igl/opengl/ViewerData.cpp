@@ -33,6 +33,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   id(-1)
 {
   clear();
+  transform = Eigen::Matrix4f::Identity();
 };
 
 IGL_INLINE void igl::opengl::ViewerData::set_face_based(bool newvalue)
@@ -688,4 +689,16 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.points_F_vbo(i) = i;
     }
   }
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_transform(const Eigen::Matrix<double, 3, 4>& m)
+{
+	Eigen::Matrix<float, 3, 4> spm = m.cast<float>();
+	set_transform(spm);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_transform(const Eigen::Matrix<float, 3, 4>& m)
+{
+	transform.block<3, 4>(0, 0) = m;
+	transform.row(3) << 0, 0, 0, 1;
 }
