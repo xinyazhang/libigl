@@ -33,7 +33,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   id(-1)
 {
   clear();
-  transform = Eigen::Matrix4f::Identity();
+  transforms[0] = Eigen::Matrix4f::Identity();
 };
 
 IGL_INLINE void igl::opengl::ViewerData::set_face_based(bool newvalue)
@@ -691,14 +691,30 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   }
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_transform(const Eigen::Matrix<double, 3, 4>& m)
+IGL_INLINE void igl::opengl::ViewerData::set_transform(const Eigen::Matrix<double, 3, 4>& m, int index)
 {
 	Eigen::Matrix<float, 3, 4> spm = m.cast<float>();
-	set_transform(spm);
+	set_transform(spm, index);
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_transform(const Eigen::Matrix<float, 3, 4>& m)
+IGL_INLINE void igl::opengl::ViewerData::set_transform(const Eigen::Matrix<float, 3, 4>& m, int index)
 {
+	auto& transform = transforms[index];
 	transform.block<3, 4>(0, 0) = m;
 	transform.row(3) << 0, 0, 0, 1;
+}
+
+IGL_INLINE bool igl::opengl::ViewerData::remove_transform(int index)
+{
+	auto iter = transforms.find(index);
+	if (iter == transforms.end())
+		return false;
+	transforms.erase(iter);
+	return true;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::reset_transforms()
+{
+	transforms.clear();
+	transforms[0] = Eigen::Matrix4f::Identity();
 }

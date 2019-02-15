@@ -206,10 +206,12 @@ public:
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
 
-  Eigen::Matrix4f transform;
+  std::map<int, Eigen::Matrix4f> transforms;
 
-  void set_transform(const Eigen::Matrix<double, 3, 4>&);
-  void set_transform(const Eigen::Matrix<float, 3, 4>&);
+  void set_transform(const Eigen::Matrix<double, 3, 4>&, int index = 0);
+  void set_transform(const Eigen::Matrix<float, 3, 4>&, int index = 0);
+  bool remove_transform(int index);
+  void reset_transforms();
 };
 
 } // namespace opengl
@@ -259,7 +261,7 @@ namespace igl
       SERIALIZE_MEMBER(line_color);
       SERIALIZE_MEMBER(shininess);
       SERIALIZE_MEMBER(id);
-      SERIALIZE_MEMBER(transform);
+      SERIALIZE_MEMBER(transforms);
     }
     template<>
     inline void serialize(const igl::opengl::ViewerData& obj, std::vector<char>& buffer)

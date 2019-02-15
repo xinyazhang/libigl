@@ -157,7 +157,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
   GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
   GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
-  glUniformMatrix4fv(trani, 1, GL_FALSE, data.transform.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
   glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());
@@ -174,68 +173,72 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
-  if (data.V.rows()>0)
-  {
-    // Render fill
-    if (data.show_faces)
-    {
-      // Texture
-      glUniform1f(texture_factori, data.show_texture ? 1.0f : 0.0f);
-      data.meshgl.draw_mesh(true);
-      glUniform1f(texture_factori, 0.0f);
-    }
+  for (const auto& kv : data.transforms)
+	{
+		glUniformMatrix4fv(trani, 1, GL_FALSE, kv.second.data());
 
-    // Render wireframe
-    if (data.show_lines)
-    {
-      glLineWidth(data.line_width);
-      glUniform4f(fixed_colori,
-        data.line_color[0],
-        data.line_color[1],
-        data.line_color[2], 1.0f);
-      data.meshgl.draw_mesh(false);
-      glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
-    }
+		if (data.V.rows()>0)
+		{
+			// Render fill
+			if (data.show_faces)
+			{
+				// Texture
+				glUniform1f(texture_factori, data.show_texture ? 1.0f : 0.0f);
+				data.meshgl.draw_mesh(true);
+				glUniform1f(texture_factori, 0.0f);
+			}
+
+			// Render wireframe
+			if (data.show_lines)
+			{
+				glLineWidth(data.line_width);
+				glUniform4f(fixed_colori,
+					data.line_color[0],
+					data.line_color[1],
+					data.line_color[2], 1.0f);
+				data.meshgl.draw_mesh(false);
+				glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
+			}
+		}
+
+		if (data.show_overlay)
+		{
+			if (data.show_overlay_depth)
+				glEnable(GL_DEPTH_TEST);
+			else
+				glDisable(GL_DEPTH_TEST);
+
+			if (data.lines.rows() > 0)
+			{
+				data.meshgl.bind_overlay_lines();
+				viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
+				proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
+
+				glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
+				glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+				// This must be enabled, otherwise glLineWidth has no effect
+				glEnable(GL_LINE_SMOOTH);
+				glLineWidth(data.line_width);
+
+				data.meshgl.draw_overlay_lines();
+			}
+
+			if (data.points.rows() > 0)
+			{
+				data.meshgl.bind_overlay_points();
+				viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
+				proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
+
+				glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
+				glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+				glPointSize(data.point_size);
+
+				data.meshgl.draw_overlay_points();
+			}
+
+			glEnable(GL_DEPTH_TEST);
+		}
   }
-
-  if (data.show_overlay)
-  {
-    if (data.show_overlay_depth)
-      glEnable(GL_DEPTH_TEST);
-    else
-      glDisable(GL_DEPTH_TEST);
-
-    if (data.lines.rows() > 0)
-    {
-      data.meshgl.bind_overlay_lines();
-      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
-      proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
-
-      glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
-      glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      // This must be enabled, otherwise glLineWidth has no effect
-      glEnable(GL_LINE_SMOOTH);
-      glLineWidth(data.line_width);
-
-      data.meshgl.draw_overlay_lines();
-    }
-
-    if (data.points.rows() > 0)
-    {
-      data.meshgl.bind_overlay_points();
-      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
-      proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
-
-      glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
-      glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      glPointSize(data.point_size);
-
-      data.meshgl.draw_overlay_points();
-    }
-
-    glEnable(GL_DEPTH_TEST);
-  }
-
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
