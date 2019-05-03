@@ -15,6 +15,7 @@
 #include <Eigen/Core>
 #include <memory>
 #include <vector>
+#include <map>
 
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
