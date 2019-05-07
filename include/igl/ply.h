@@ -2596,7 +2596,7 @@ inline void write_ascii_item(
       break;
     case PLY_FLOAT:
     case PLY_DOUBLE:
-      if (fprintf (fp, "%g ", double_val) <= 0)
+      if (fprintf (fp, "%0.17g ", double_val) <= 0)
       {
 	  fprintf(stderr, "PLY ERROR: fprintf() failed -- aborting.\n");
 	  exit(1);
