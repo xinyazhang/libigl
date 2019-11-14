@@ -167,20 +167,12 @@ namespace glfw
       return EXIT_FAILURE;
     }
     glfwMakeContextCurrent(window);
-#ifdef __glad_h_
     // Load OpenGL and its extensions
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
-        printf("Failed to load OpenGL and its extensions\n");
-        return(-1);
+      printf("Failed to load OpenGL and its extensions\n");
+      return(-1);
     }
-#else
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
-    {
-      printf("Failed to load OpenGL and its extensions with GLEW");
-    }
-#endif
     #if defined(DEBUG) || defined(_DEBUG)
       printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
       int major, minor, rev;
