@@ -382,11 +382,15 @@ IGL_INLINE float ImGuiMenu::pixel_ratio()
 
 IGL_INLINE float ImGuiMenu::hidpi_scaling()
 {
+#if GLFW_VERSION_MAJOR >= 3 && GLFW_VERSION_MINOR >= 3
   // Computes scaling factor for hidpi devices
   float xscale, yscale;
   GLFWwindow* window = glfwGetCurrentContext();
   glfwGetWindowContentScale(window, &xscale, &yscale);
   return 0.5 * (xscale + yscale);
+#else
+  return 1.0;
+#endif
 }
 
 } // end namespace
